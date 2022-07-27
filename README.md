@@ -10,3 +10,38 @@
 因此n=1.2* B^0.5，因此(1-e)^(-n^2/2B)=1-e^-0.72=0.53>50%   
 所以，我们只需要2^(n/2)次寻找，就有50%概率能够找到相同tag的不同消息。
 *SM3实现*  
+SM3算法执行步骤可以分为四个步骤:消息填充、消息扩展、迭代压缩，输出结果
+消息填充  
+是以512位的数据分组作为输入的。因此，我们需要在一开始就把数据长度填充至512位的倍数。数据填充规则和MD5一样，具体步骤如下,  
+(1)先填充一个“1”，后面加上k个“0”。其中k是满足(n+1+k) mod 512 = 448的最小正整数
+![图片](https://user-images.githubusercontent.com/96277679/181141199-64506106-d13e-4a54-bcf9-c7c79971f50f.png)  
+(2)追加64位的数据长度  
+![图片](https://user-images.githubusercontent.com/96277679/181141238-b64e969c-03de-44ae-85bb-f16e435af3cc.png)  
+消息扩展  
+没有直接使用数据分组进行运算，而是使用这个步骤产生的132个消息字。（一个消息字的长度为32位/4个字节/8个16j进制数字）概括来说，先将一个512位数据分组划分为16个消息字，并且作为生成的132个消息字的前16个。再用这16个消息字递推生成剩余的116个消息字。  
+在最终得到的132个消息字中，前68个消息字构成数列{W_j}，后64个消息字构成数列  {W‘_j}，其中下标j从0开始计数。  
+![图片](https://user-images.githubusercontent.com/96277679/181141434-8bafcffe-30cb-4c92-a2b4-6d00d8511fd9.png)  
+![图片](https://user-images.githubusercontent.com/96277679/181141704-08d62456-998a-4bdf-b466-29665b84f51d.png)  
+迭代压缩  
+SM3使用消息扩展得到的消息字进行运算。  
+![图片](https://user-images.githubusercontent.com/96277679/181141749-a3521d26-d2fd-4aed-a5c2-d3993c510ff9.png)  
+压缩函数将这八个变量进行64轮相同的计算，一轮的计算过程如下图所示：  
+![图片](https://user-images.githubusercontent.com/96277679/181141791-5ef1fa78-afac-4b5a-8ce6-ef691fa824ad.png)  
+实现如下：  
+![图片](https://user-images.githubusercontent.com/96277679/181142210-03bae5b2-11f5-4fd8-b1f4-cd7c0210d972.png)
+结果输出  
+![图片](https://user-images.githubusercontent.com/96277679/181142269-cd2a93a7-fd81-4eb0-bd07-dc95178799f1.png)  
+*实现生日攻击*  
+查找碰撞，查找到碰撞后返回碰撞结果，生日攻击成功。实现结果如下，  
+8位  
+![图片](https://user-images.githubusercontent.com/96277679/181142811-dc9504c1-f24f-4fd8-8677-0ad1f792f234.png)    
+16位  
+![图片](https://user-images.githubusercontent.com/96277679/181142870-6d5299db-16c7-4592-acbb-c543f3f866d8.png)
+
+
+
+
+
+
+
+
